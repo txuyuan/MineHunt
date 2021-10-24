@@ -1,140 +1,134 @@
 package plugin.MineHunt.types;
 
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import plugin.MineHunt.Main;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.stream.Collectors;
 
 public class Team {
 
     static final String fileName = "teamData";
+
+    private String alias;
     private final List<String> members;
     private String name;
-    private String alias;
-    private char colour;
+    private char colourCode;
     private int points;
 
 
     //Constructors
-    public Team(List<String> members, String name, String alias, char colour, int points) {
+    public Team(List<String> members, String name, String alias, char colourCode, int points) {
         this.members = members;
         this.name = name;
-        this.alias = alias.toLowerCase();
-        this.colour = colour;
+        this.alias = alias.toUpperCase();
+        this.colourCode = colourCode;
         this.points = points;
-        Main.testLog("members: " + members + ", name: " + name + ", colour: " + colour + ", points: " + points);
-        saveYaml();
+        Main.testLog("members: " + members + ", name: " + name + ", colour: " + colourCode + ", points: " + points);
+        saveTeam();
+    }
+    //Default constructor for Jackson
+    public Team(){
+        members = new ArrayList<>();
+        name = "placeholder";
+        alias = "placeholder";
+        colourCode = 'f';
+        points = 0;
     }
 
-    /**
-     * Returns null if team does not exist
-     */
-    public static Team getTeam(String alias) {
-        FileConfiguration fileC = YamlConfiguration.loadConfiguration(new File("./plugins/MineHunt/" + fileName));
 
-        Map<String, Object> teamMap = fileC.getConfigurationSection("teams." + alias.toLowerCase()).getValues(false);
-        if (teamMap == null) return null;
-        Main.testLog("Team load: " + teamMap);
-        List<String> members = (List<String>) teamMap.get("members");
-        String name = (String) teamMap.get("name");
-        char colour = (char) teamMap.get("colour");
-        int points = (int) teamMap.get("points");
-
-        Team team = new Team(members, name, alias, colour, points);
-        return team;
-    }
-
-    public static String getTeamName(String alias) {
-        return getTeam(alias).getName();
-    }
-
-    public static String getFileName() {
-        return fileName;
-    }
-
-    public static FileConfiguration getTeamFile() {
-        FileConfiguration fileC = YamlConfiguration.loadConfiguration(new File("./plugins/MineHunt/" + fileName));
-        return fileC;
-    }
-
-    public static void saveTeamFile(FileConfiguration fileC) {
-        File file = new File("./plugins/MineHunt/" + fileName);
-        try {
-            fileC.save(file);
-        } catch (IOException e) {
-            Main.logDiskError(e);
-        }
-    }
 
     //Modifiers
-    public void removeMember(String playerUuid) {
-        members.remove(playerUuid);
-    }
+    public void removeMember(String playerUuid) {members.remove(playerUuid); saveTeam();}
+    public void addMember(String playerUuid) {members.add(playerUuid); saveTeam();}
+    public void addPoints(int pointDiff) {this.points = this.points + pointDiff; saveTeam();}
+    public void setName(String name) {this.name = name; saveTeam();}
+    public void setAlias(String alias) {this.alias = alias.toUpperCase(); saveTeam();}
+    public void setColourCode(char colour) {this.colourCode = colour; saveTeam();}
+    public void setPoints(int points) {this.points = points; saveTeam();}
 
-    public void addMember(String playerUuid) {
-        members.add(playerUuid);
-    }
 
-    public void addPoints(int pointDiff) {
-        this.points = this.points + pointDiff;
-    }
 
     //Getters
-    public List<String> getMembers() {
-        return this.members;
-    }
+    public String getAlias() {return alias;}
+    public String getName() {return name;}
+    public List<String> getMembers() {return this.members;}
+    public char getColourCode() {return colourCode;}
+    public int getPoints() {return points;}
+    @JsonIgnore public String getNameColoured(){return "§" + colourCode + name;}
+    @JsonIgnore public String getAliasColoured(){return "§" + colourCode + alias;}
 
-    public String getName() {
-        return name;
-    }
+    public static String getTeamName(String alias) {return getTeam(alias).getName();}
+    public static String getFileName() {return fileName;}
 
-    public void setName(String name) {
-        this.name = name;
-    }
 
-    public String getAlias() {
-        return alias;
-    }
-
-    public void setAlias(String alias) {
-        this.alias = alias.toLowerCase();
-    }
-
-    public char getColourCode() {
-        return colour;
-    }
-
-    public void setColourCode(char colour) {
-        this.colour = colour;
-    }
-
-    public int getPoints() {
-        return points;
-    }
-
-    public void setPoints(int points) {
-        this.points = points;
-    }
 
     //Disk tools
-    public void saveYaml() {
-        FileConfiguration fileC = getTeamFile();
+    private void saveDeleteTeam(boolean isSave){
+        File file = getTeamFile();
+        ObjectMapper om = getMapper();
+        TeamList teamList;
+        try{
+            try{
+                teamList = om.readValue(file, TeamList.class);
+            }catch(FileNotFoundException e){
+                teamList = new TeamList();
+            }
 
-        Map<String, Object> team = new HashMap<>();
-        team.put("members", members);
-        team.put("name", name);
-        team.put("colour", colour);
-        team.put("int", points);
-        Main.testLog("Team save: " + team);
-        fileC.createSection("teams." + alias.toLowerCase(), team);
+            if(isSave) teamList.addTeam(this);
+            else teamList.removeTeam(this);
 
-        saveTeamFile(fileC);
+            om.writeValue(file, teamList);
+        }catch(Exception e){e.printStackTrace();}
     }
+    public void saveTeam(){saveDeleteTeam(true);}
+    public void removeTeam(){saveDeleteTeam(false);}
+
+
+    public static Team getTeam(String alias){
+        List<Team> teams = getTeams();
+        Main.testLog("Teams: " + String.join(", ", teams.stream().map(team -> team.getAlias()).collect(Collectors.toList()))); Main.testLog(alias);
+        List<Team> matches = teams.stream().filter(team -> team.getAlias().equalsIgnoreCase(alias)).collect(Collectors.toList());
+        Main.testLog(matches.toString());
+        if(matches.size() != 1) return null;
+
+        return matches.get(0);
+    }
+
+
+
+
+
+    //Utils
+    public static List<Team> getTeams(){
+        File file = getTeamFile();
+        ObjectMapper om = getMapper();
+        TeamList teamList;
+        try{teamList = om.readValue(file, TeamList.class);}
+        catch(Exception e){e.printStackTrace(); return null;}
+
+        return teamList.getTeams();
+    }
+
+    public static File getTeamFile() {
+        File file = new File("./plugins/MineHunt/" + fileName + ".yml");
+        if(file==null) {
+            try{file.createNewFile();}
+            catch(IOException e){Main.logDiskError(e);}
+        }
+        return file;
+    }
+    public static ObjectMapper getMapper(){
+        return new ObjectMapper(new YAMLFactory()).registerModule(new ParameterNamesModule());
+    }
+
 
 
 }

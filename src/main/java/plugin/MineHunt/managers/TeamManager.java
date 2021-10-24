@@ -1,11 +1,16 @@
 package plugin.MineHunt.managers;
 
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.OfflinePlayer;
+import plugin.MineHunt.Main;
 import plugin.MineHunt.types.Team;
 
+import java.io.IOException;
 import java.security.InvalidParameterException;
+import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class TeamManager {
 
@@ -21,36 +26,57 @@ public class TeamManager {
         }
 
         Team team = new Team(players, name, alias, colour, 0);
+
         return team;
     }
 
 
     public static void deleteTeam(String alias){
-        FileConfiguration fileC = Team.getTeamFile();
-        fileC.set("team." + alias, null);
-        Team.saveTeamFile(fileC);
+        Team team = Team.getTeam(alias);
+        if(team==null) new IOException("Team of alias: " + alias + " cannot be deleted (does not exist)").printStackTrace();
+        team.removeTeam();
     }
 
 
     /** Returns null if success */
-    public static String removeMember(String alias, String playerUuid){
+    public static String removeMember(String alias, OfflinePlayer player){
         Team team = Team.getTeam(alias);
         if(team == null)
             return "§c(Error)§f A team with alias " + alias + " does not exist ";
-        if(!team.getMembers().contains(playerUuid))
-            return "§c(Error)§f " + alias + " does not have " + Bukkit.getOfflinePlayer(playerUuid).getName() + " as a member";
-        team.removeMember(playerUuid);
+        if(!team.getMembers().contains(player.getUniqueId().toString()))
+            return "§c(Error)§f " + alias + " does not have " + player.getName() + " as a member";
+        team.removeMember(player.getUniqueId().toString());
         return null;
     }
 
 
     /** Returns null if success */
-    public static String addMember(String alias, String playerUuid){
+    public static String addMember(String alias, OfflinePlayer player){
         Team team = Team.getTeam(alias);
         if(team == null)
             return "§c(Error)§f A team with alias " + alias + " does not exist ";
-        team.addMember(playerUuid);
+        team.addMember(player.getUniqueId().toString());
         return null;
+    }
+
+    public static String getTeamInfo(Team team){
+        List<String> playerNames = team.getMembers().stream().map(uuid -> Bukkit.getOfflinePlayer(UUID.fromString(uuid)).getName()).collect(Collectors.toList());
+
+        String msg = "§3(Info)§f --- Team Information" +
+                "\n§aAlias§f >> §" + team.getAliasColoured() +
+                "\n§aName§f >> §" + team.getNameColoured() +
+                "\n§aPoints§f >> " + team.getPoints() +
+                "\n§aMembers§f >> " + String.join("\n- ", playerNames);
+        Main.testLog(msg);
+        return msg;
+    }
+
+
+
+    public static List<String> getAliases(){
+        List<Team> teams = Team.getTeams();
+        if(teams==null) return Arrays.asList();
+        return teams.stream().map(team -> team.getAlias()).collect(Collectors.toList());
     }
 
 

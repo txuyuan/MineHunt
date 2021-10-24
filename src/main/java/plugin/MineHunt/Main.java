@@ -3,6 +3,8 @@ package plugin.MineHunt;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+import plugin.MineHunt.commands.CTeam;
+import plugin.MineHunt.completers.CTeamCompleter;
 
 import java.io.IOException;
 import java.util.logging.Level;
@@ -11,10 +13,10 @@ public class Main extends JavaPlugin {
 
     @Override
     public void onEnable() {
-
         getDataFolder().mkdir();
 
-
+        getCommand("cteam").setExecutor(new CTeam());
+        getCommand("cteam").setTabCompleter(new CTeamCompleter());
 
         logInfo("§b(Status)§f Plugin enabled successfully");
 
@@ -42,7 +44,7 @@ public class Main extends JavaPlugin {
     }
 
     public static void testLog(String msg) {
-        boolean isDebug = false;
+        boolean isDebug = true;
         if (isDebug) logInfo("§aTest: " + msg);
     }
 
