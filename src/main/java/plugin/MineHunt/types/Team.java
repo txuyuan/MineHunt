@@ -1,6 +1,8 @@
 package plugin.MineHunt.types;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
@@ -10,6 +12,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,12 +38,17 @@ public class Team {
         saveTeam();
     }
     //Default constructor for Jackson
-    public Team(){
-        members = new ArrayList<>();
-        name = "placeholder";
-        alias = "placeholder";
-        colourCode = 'f';
-        points = 0;
+    @JsonCreator
+    public Team(@JsonProperty("alias") String alias,
+                @JsonProperty("members")List<String> members,
+                @JsonProperty("name") String name,
+                @JsonProperty("colourCode") char colourCode,
+                @JsonProperty("points") int points){
+        this.alias = alias;
+        this.members = members;
+        this.name = name;
+        this.colourCode = colourCode;
+        this.points = points;
     }
 
 
@@ -74,19 +82,19 @@ public class Team {
     private void saveDeleteTeam(boolean isSave){
         File file = getTeamFile();
         ObjectMapper om = getMapper();
-        TeamList teamList;
+        TeamList teamList = new TeamList(new ArrayList<>());
         try{
-            try{
-                teamList = om.readValue(file, TeamList.class);
-            }catch(FileNotFoundException e){
-                teamList = new TeamList();
-            }
+            teamList = om.readValue(file, TeamList.class);
+        } catch(Exception e){teamList = new TeamList(new ArrayList<>());}
 
-            if(isSave) teamList.addTeam(this);
-            else teamList.removeTeam(this);
+        if(isSave) teamList.addTeam(this);
+        else teamList.removeTeam(this);
 
-            om.writeValue(file, teamList);
-        }catch(Exception e){e.printStackTrace();}
+        Main.testLog("Delete result: " + String.join(", ", teamList.getTeams().stream().map(team -> team.getName()).collect(Collectors.toList())));
+        file.delete();
+        file = getTeamFile();
+        try{ om.writeValue(file, teamList);}
+        catch(Exception e){e.printStackTrace();}
     }
     public void saveTeam(){saveDeleteTeam(true);}
     public void removeTeam(){saveDeleteTeam(false);}
@@ -94,9 +102,7 @@ public class Team {
 
     public static Team getTeam(String alias){
         List<Team> teams = getTeams();
-        Main.testLog("Teams: " + String.join(", ", teams.stream().map(team -> team.getAlias()).collect(Collectors.toList()))); Main.testLog(alias);
         List<Team> matches = teams.stream().filter(team -> team.getAlias().equalsIgnoreCase(alias)).collect(Collectors.toList());
-        Main.testLog(matches.toString());
         if(matches.size() != 1) return null;
 
         return matches.get(0);
@@ -112,14 +118,14 @@ public class Team {
         ObjectMapper om = getMapper();
         TeamList teamList;
         try{teamList = om.readValue(file, TeamList.class);}
-        catch(Exception e){e.printStackTrace(); return null;}
+        catch(Exception e){return new ArrayList<>();}
 
         return teamList.getTeams();
     }
 
     public static File getTeamFile() {
         File file = new File("./plugins/MineHunt/" + fileName + ".yml");
-        if(file==null) {
+        if(!file.exists()) {
             try{file.createNewFile();}
             catch(IOException e){Main.logDiskError(e);}
         }

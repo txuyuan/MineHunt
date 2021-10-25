@@ -13,6 +13,7 @@ import plugin.MineHunt.types.Team;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class CTeam implements CommandExecutor {
 
@@ -27,8 +28,6 @@ public class CTeam implements CommandExecutor {
             sender.sendMessage("§c(Error)§f No arguments passed");
             return true;
         }
-
-        Main.testLog(args.toString());
 
         String msg = switch(args[0]){
             case "create" -> createGroup(args);
@@ -109,15 +108,36 @@ public class CTeam implements CommandExecutor {
             return "§c(Error)§f Specified colour invalid";
         char colour = colourChar;
 
+        List<Team> teams = Team.getTeams();
+        List<String> names = teams.stream().map(team -> team.getName()).collect(Collectors.toList());
+        if(names.contains(name)) return "§c(Error)§f Name unavailable";
+        List<String> aliases = teams.stream().map(team -> team.getAlias()).collect(Collectors.toList());
+        if(aliases.contains(alias)) return "§c(Error)§f Alias unavailable";
+
+        List<String> playerUuids = new ArrayList<>();
+        teams.forEach(team -> team.getMembers().forEach(member -> playerUuids.add(member)));
+
+
         List<String> playerNames = new ArrayList<>();
         List<String> players = new ArrayList<>();
+        List<String> errorPlayers = new ArrayList<>();
+        List<String> unavailPlayers = new ArrayList<>();
+
         for(int i = 4; i<=args.length-1; i++){
             String playerName = args[i];
             OfflinePlayer player = Bukkit.getOfflinePlayerIfCached(playerName);
-            if(player == null) continue;
+            if(player == null) {
+                errorPlayers.add(playerName); continue;}
+            if(playerUuids.contains(player.getUniqueId().toString())) {
+                unavailPlayers.add(playerName); continue;}
+
             players.add(player.getUniqueId().toString());
             playerNames.add(player.getName());
         }
+        if(errorPlayers.size() > 0)
+            return "§c(Error)§f " + String.join(", ", errorPlayers) + (errorPlayers.size()>1 ? " have" : " has") + " not logged on before";
+        if(unavailPlayers.size() > 0)
+            return "§c(Error)§f " + String.join(", ", unavailPlayers) + (unavailPlayers.size()>1 ? "are" : "is") + " already in another group";
         if(players.size()==0)
             return "§c(Error)§f Specified players invalid";
 

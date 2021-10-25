@@ -2,7 +2,6 @@ package plugin.MineHunt.managers;
 
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
-import plugin.MineHunt.Main;
 import plugin.MineHunt.types.Team;
 
 import java.io.IOException;
@@ -67,7 +66,6 @@ public class TeamManager {
                 "\n§aName§f >> §" + team.getNameColoured() +
                 "\n§aPoints§f >> " + team.getPoints() +
                 "\n§aMembers§f >> " + String.join("\n- ", playerNames);
-        Main.testLog(msg);
         return msg;
     }
 
