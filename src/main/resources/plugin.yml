@@ -7,6 +7,9 @@ author: Xuyuan
 commands:
   cteam:
     description: Operate on teams
+  cpoints:
+    description: Alter team points
+    aliases: [points]
 
 permissions:
   minehunt.admin:

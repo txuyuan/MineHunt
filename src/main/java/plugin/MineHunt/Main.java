@@ -1,10 +1,14 @@
 package plugin.MineHunt;
 
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
-import plugin.MineHunt.commands.CTeam;
-import plugin.MineHunt.completers.CTeamCompleter;
+import plugin.MineHunt.CTeam.commands.CPoints;
+import plugin.MineHunt.CTeam.commands.CTeam;
+import plugin.MineHunt.CTeam.completers.CPointsCompleter;
+import plugin.MineHunt.CTeam.completers.CTeamCompleter;
+import plugin.MineHunt.CTeam.types.Team;
 
 import java.io.IOException;
 import java.util.logging.Level;
@@ -15,8 +19,11 @@ public class Main extends JavaPlugin {
     public void onEnable() {
         getDataFolder().mkdir();
 
+        ConfigurationSerialization.registerClass(Team.class, "Team");
         getCommand("cteam").setExecutor(new CTeam());
         getCommand("cteam").setTabCompleter(new CTeamCompleter());
+        getCommand("cpoints").setExecutor(new CPoints());
+        getCommand("cpoints").setTabCompleter(new CPointsCompleter());
 
         logInfo("§b(Status)§f Plugin enabled successfully");
 
@@ -45,7 +52,7 @@ public class Main extends JavaPlugin {
 
     public static void testLog(String msg) {
         boolean isDebug = true;
-        if (isDebug) logInfo("§aTest: " + msg);
+        if (isDebug) logInfo("§cTest: " + msg);
     }
 
 }

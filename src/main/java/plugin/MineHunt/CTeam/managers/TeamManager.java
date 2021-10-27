@@ -1,12 +1,12 @@
-package plugin.MineHunt.managers;
+package plugin.MineHunt.CTeam.managers;
 
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
-import plugin.MineHunt.types.Team;
+import plugin.MineHunt.CTeam.types.Team;
 
 import java.io.IOException;
 import java.security.InvalidParameterException;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -33,7 +33,7 @@ public class TeamManager {
     public static void deleteTeam(String alias){
         Team team = Team.getTeam(alias);
         if(team==null) new IOException("Team of alias: " + alias + " cannot be deleted (does not exist)").printStackTrace();
-        team.removeTeam();
+        team.deleteTeam();
     }
 
 
@@ -65,7 +65,7 @@ public class TeamManager {
                 "\n§aAlias§f >> §" + team.getAliasColoured() +
                 "\n§aName§f >> §" + team.getNameColoured() +
                 "\n§aPoints§f >> " + team.getPoints() +
-                "\n§aMembers§f >> " + String.join("\n- ", playerNames);
+                "\n§aMembers§f >> " + String.join(", ", playerNames);
         return msg;
     }
 
@@ -73,7 +73,7 @@ public class TeamManager {
 
     public static List<String> getAliases(){
         List<Team> teams = Team.getTeams();
-        if(teams==null) return Arrays.asList();
+        if(teams==null) return new ArrayList<>();
         return teams.stream().map(team -> team.getAlias()).collect(Collectors.toList());
     }
 
