@@ -1,4 +1,4 @@
-package plugin.MineHunt.completers;
+package plugin.MineHunt.CTeam.completers;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -6,12 +6,14 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
-import plugin.MineHunt.managers.Colour;
-import plugin.MineHunt.managers.TeamManager;
-import plugin.MineHunt.types.Team;
+import plugin.MineHunt.CTeam.managers.Colour;
+import plugin.MineHunt.CTeam.managers.TeamManager;
+import plugin.MineHunt.CTeam.types.Team;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class CTeamCompleter implements TabCompleter {
@@ -20,7 +22,7 @@ public class CTeamCompleter implements TabCompleter {
     public @Nullable List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
         
         if((sender instanceof Player) && !sender.hasPermission("minehunt.admin"))
-            return Arrays.asList();
+            return new ArrayList<>();
 
         List<String> completions = parse(args);
         String lastArg = args[args.length - 1];
@@ -39,9 +41,9 @@ public class CTeamCompleter implements TabCompleter {
                 case "create" -> createOptions(args);
                 case "add" -> addOptions(args);
                 case "remove" -> removeOptions(args);
-                default -> Arrays.asList();
+                default -> new ArrayList<>();
             };
-        }else return Arrays.asList();
+        }else return new ArrayList<>();
     }
 
 
@@ -67,12 +69,13 @@ public class CTeamCompleter implements TabCompleter {
 
         String alias = args[1];
         Team team = Team.getTeam(alias);
-        if(team == null) return Arrays.asList();
+        if(team == null) return new ArrayList<>();
 
         List<String> playerUuids = team.getMembers();
-        List<String> playerNames = Arrays.asList();
+        List<String> playerNames = new ArrayList<>();
         if(playerUuids!=null)
-            playerNames = playerUuids.stream().map(uuid -> Bukkit.getOfflinePlayer(uuid).getName()).collect(Collectors.toList());
+            playerNames = playerUuids.stream().map(uuid -> Bukkit.getOfflinePlayer(UUID.fromString(uuid)).getName()).collect(Collectors.toList());
+
         return playerNames;
     }
 

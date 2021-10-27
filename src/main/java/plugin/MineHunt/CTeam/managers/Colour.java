@@ -1,4 +1,4 @@
-package plugin.MineHunt.managers;
+package plugin.MineHunt.CTeam.managers;
 
 import java.util.HashMap;
 import java.util.Map;

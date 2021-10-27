@@ -1,4 +1,4 @@
-package plugin.MineHunt.commands;
+package plugin.MineHunt.CTeam.commands;
 
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -6,10 +6,10 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import plugin.MineHunt.CTeam.managers.Colour;
+import plugin.MineHunt.CTeam.managers.TeamManager;
+import plugin.MineHunt.CTeam.types.Team;
 import plugin.MineHunt.Main;
-import plugin.MineHunt.managers.Colour;
-import plugin.MineHunt.managers.TeamManager;
-import plugin.MineHunt.types.Team;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,12 +64,10 @@ public class CTeam implements CommandExecutor {
             return "§c(Error)§f Player name required";
         String alias = args[1];
         String playerName = args[2];
-        Main.testLog(playerName);
 
         OfflinePlayer player = Bukkit.getOfflinePlayer(playerName);
         if(player == null)
             return "§c(Error)§f " + playerName + " has not logged on before";
-
 
         String error = isAdd ? TeamManager.addMember(alias, player) : TeamManager.removeMember(alias, player);
         if(error != null) return error;
@@ -81,11 +79,13 @@ public class CTeam implements CommandExecutor {
         if(args.length < 2)
             return "§c(Error)§f Alias required";
         String alias = args[1];
-        if(Team.getTeam(alias) == null)
-            return "§c(Error)§f A team with alias " + alias + " does not exist ";
-        Team.getTeam(alias).removeTeam();
+        Team team = Team.getTeam(alias);
+        if(team==null) return "§c(Error)§f A team with alias " + alias + " does not exist ";
 
-        return "§b(Status)§f Team " + Team.getTeamName(alias) + " (" + alias + ") deleted successfully";
+        team.deleteTeam();
+        String nameAlias = team.getNameAlias();
+
+        return "§b(Status)§f " + nameAlias + " deleted successfully";
     }
 
 
@@ -117,7 +117,6 @@ public class CTeam implements CommandExecutor {
         List<String> playerUuids = new ArrayList<>();
         teams.forEach(team -> team.getMembers().forEach(member -> playerUuids.add(member)));
 
-
         List<String> playerNames = new ArrayList<>();
         List<String> players = new ArrayList<>();
         List<String> errorPlayers = new ArrayList<>();
@@ -145,6 +144,7 @@ public class CTeam implements CommandExecutor {
 
         return "§b(Status)§f Team created\n" + TeamManager.getTeamInfo(team);
     }
+
 
 
 }
