@@ -20,7 +20,7 @@ public class CTeam implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 
-        if((sender instanceof Player) && !sender.hasPermission("minehunt.admin")){
+        if((sender instanceof Player) && !sender.hasPermission("cteam.admin")){
             sender.sendMessage("§c(Error)§f You do not have permission to do this");
             return true;
         }
@@ -35,6 +35,7 @@ public class CTeam implements CommandExecutor {
             case "add" -> addMember(args, true);
             case "remove" -> addMember(args, false);
             case "info" -> listInfo(args);
+            case "update" -> updateTeam();
             default -> "§c(Error)§f Unrecognised argument " + args[0];
         };
 
@@ -44,6 +45,12 @@ public class CTeam implements CommandExecutor {
     }
 
 
+
+    private static String updateTeam(){
+        List<Team> teams = Team.getTeams();
+        if(teams!=null && teams.size() > 0) teams.forEach(team -> team.saveTeam());
+        return "§b(Status)§f Teams updated";
+    }
 
 
     private static String listInfo(String[] args){

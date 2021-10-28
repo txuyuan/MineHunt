@@ -1,6 +1,6 @@
 main: plugin.MineHunt.Main
 name: MineHunt
-version: 0.1.0
+version: 0.1.1
 api-version: 1.17
 author: Xuyuan
 
@@ -12,6 +12,6 @@ commands:
     aliases: [points]
 
 permissions:
-  minehunt.admin:
+  cteam.admin:
     description: Operate on MineHunt teams
     default: op

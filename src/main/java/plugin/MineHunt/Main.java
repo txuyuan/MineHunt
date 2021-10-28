@@ -1,9 +1,14 @@
 package plugin.MineHunt;
 
 import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
+import org.bukkit.entity.Player;
+import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+import plugin.MineHunt.CBoard.listeners.PlayerJoinListener;
+import plugin.MineHunt.CBoard.managers.ScoreboardManager;
 import plugin.MineHunt.CTeam.commands.CPoints;
 import plugin.MineHunt.CTeam.commands.CTeam;
 import plugin.MineHunt.CTeam.completers.CPointsCompleter;
@@ -25,15 +30,19 @@ public class Main extends JavaPlugin {
         getCommand("cpoints").setExecutor(new CPoints());
         getCommand("cpoints").setTabCompleter(new CPointsCompleter());
 
-        logInfo("§b(Status)§f Plugin enabled successfully");
+        getServer().getPluginManager().registerEvents(new PlayerJoinListener(), this);
+        ScoreboardManager.updateAllBoards();
+
+        logInfo("§b(Status)§f MineHunt enabled successfully");
 
     }
 
     @Override
     public void onDisable() {
 
+        HandlerList.unregisterAll(new PlayerJoinListener());
 
-        logInfo("§b(Status)§f Plugin disabled successfully");
+        logInfo("§b(Status)§f MineHunt disabled successfully");
     }
 
 
@@ -51,8 +60,10 @@ public class Main extends JavaPlugin {
     }
 
     public static void testLog(String msg) {
-        boolean isDebug = false;
+        boolean isDebug = true;
         if (isDebug) logInfo("§cTest: " + msg);
     }
+
+
 
 }

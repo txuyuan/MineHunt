@@ -4,6 +4,9 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
+import org.bukkit.scoreboard.Score;
+import plugin.MineHunt.CBoard.managers.ScoreboardManager;
+import plugin.MineHunt.CTeam.managers.MCTeamManager;
 import plugin.MineHunt.Main;
 
 import java.io.File;
@@ -53,12 +56,14 @@ public class Team implements ConfigurationSerializable {
     public ArrayList<String> getMembers() {return this.members;}
     public char getColourCode() {return colourCode;}
     public int getPoints() {return points;}
-    public String getNameColoured(){return "§" + colourCode + name;}
-    public String getAliasColoured(){return "§" + colourCode + alias;}
+    public String getNameColoured(){return "§" + colourCode + name + "§r";}
+    public String getAliasColoured(){return "§" + colourCode + alias + "§r";}
     public String getNameAlias(){return getNameColoured() + " (" + getAliasColoured() + ")";}
 
     public static String getTeamName(String alias) {return getTeam(alias).getName();}
     public static String getFileName() {return fileName;}
+
+
 
 
 
@@ -108,20 +113,24 @@ public class Team implements ConfigurationSerializable {
         return fileC;
     }
     public static Boolean saveTeamFile(FileConfiguration fileC){
+        ScoreboardManager.updateAllBoards();
+        MCTeamManager.updateTeams(getTeams());
         try{fileC.save(getTeamFile()); return true;}
         catch(IOException e){return false;}
     }
 
 
+
+    //Serialization
     @Override
     public Map<String, Object> serialize(){
-        Map<String, Object> serialised = new HashMap<String, Object>();
-        serialised.put("alias", alias);
-        serialised.put("name", name);
-        serialised.put("colour", colourCode);
-        serialised.put("points", points);
-        serialised.put("members", members);
-        return serialised;
+        Map<String, Object> serialized = new HashMap<String, Object>();
+        serialized.put("alias", alias);
+        serialized.put("name", name);
+        serialized.put("colour", colourCode);
+        serialized.put("points", points);
+        serialized.put("members", members);
+        return serialized;
     }
     public static Team deserialize(Map<String, Object> map){return new Team(map);}
     public static Team valueOf(Map<String, Object> map){return new Team(map);}

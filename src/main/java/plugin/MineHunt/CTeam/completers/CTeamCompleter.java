@@ -34,7 +34,7 @@ public class CTeamCompleter implements TabCompleter {
 
     private static List<String> parse(String[] args){
         if(args.length == 1)
-            return Arrays.asList("create", "delete", "add", "remove", "info");
+            return Arrays.asList("create", "delete", "add", "remove", "info", "update");
         if(args.length >= 2){
             return switch(args[0]){
                 case "delete", "info" -> TeamManager.getAliases();
