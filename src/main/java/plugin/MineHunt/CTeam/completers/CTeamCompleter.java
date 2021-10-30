@@ -21,7 +21,7 @@ public class CTeamCompleter implements TabCompleter {
     @Override
     public @Nullable List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
         
-        if((sender instanceof Player) && !sender.hasPermission("minehunt.admin"))
+        if((sender instanceof Player) && !sender.hasPermission("cteam.admin"))
             return new ArrayList<>();
 
         List<String> completions = parse(args);
@@ -35,15 +35,13 @@ public class CTeamCompleter implements TabCompleter {
     private static List<String> parse(String[] args){
         if(args.length == 1)
             return Arrays.asList("create", "delete", "add", "remove", "info", "update");
-        if(args.length >= 2){
-            return switch(args[0]){
-                case "delete", "info" -> TeamManager.getAliases();
-                case "create" -> createOptions(args);
-                case "add" -> addOptions(args);
-                case "remove" -> removeOptions(args);
-                default -> new ArrayList<>();
-            };
-        }else return new ArrayList<>();
+        return switch(args[0]){
+            case "delete", "info" -> TeamManager.getAliases();
+            case "create" -> createOptions(args);
+            case "add" -> addOptions(args);
+            case "remove" -> removeOptions(args);
+            default -> new ArrayList<>();
+        };
     }
 
 

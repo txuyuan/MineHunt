@@ -5,13 +5,24 @@ api-version: 1.17
 author: Xuyuan
 
 commands:
+  minehunt:
+    description: Miscallenous operations regarding MineHunt software
   cteam:
     description: Operate on teams
   cpoints:
     description: Alter team points
     aliases: [points]
+  cbounty:
+    description: Operate on bounties
+    aliases: [cbounty]
 
 permissions:
   cteam.admin:
     description: Operate on MineHunt teams
+    default: op
+  minehunt.admin:
+    description: Operate miscallenous MineHunt software
+    default: op
+  minehunt.playtime:
+    description: Bypass node for PlayTime management
     default: op

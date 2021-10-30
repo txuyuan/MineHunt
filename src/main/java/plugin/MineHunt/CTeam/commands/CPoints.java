@@ -10,7 +10,6 @@ import org.jetbrains.annotations.NotNull;
 import plugin.MineHunt.CTeam.types.Team;
 import plugin.MineHunt.Main;
 
-import java.util.List;
 import java.util.UUID;
 
 public class CPoints implements CommandExecutor {

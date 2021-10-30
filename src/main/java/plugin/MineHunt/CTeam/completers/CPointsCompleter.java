@@ -17,7 +17,7 @@ public class CPointsCompleter implements TabCompleter {
 
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        if((sender instanceof Player) && !sender.hasPermission("minehunt.admin"))
+        if((sender instanceof Player) && !sender.hasPermission("cteam.admin"))
             return new ArrayList<>();
 
         List<String> completions = parse(args);

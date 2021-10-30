@@ -1,21 +1,15 @@
 package plugin.MineHunt;
 
 import org.bukkit.Bukkit;
-import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.serialization.ConfigurationSerialization;
-import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import plugin.MineHunt.CBoard.listeners.PlayerJoinListener;
 import plugin.MineHunt.CBoard.managers.ScoreboardManager;
-import plugin.MineHunt.CTeam.commands.CPoints;
-import plugin.MineHunt.CTeam.commands.CTeam;
-import plugin.MineHunt.CTeam.completers.CPointsCompleter;
-import plugin.MineHunt.CTeam.completers.CTeamCompleter;
-import plugin.MineHunt.CTeam.types.Team;
+import plugin.MineHunt.CTeam.CTeamManager;
+import plugin.MineHunt.bounties.BountyManager;
+import plugin.MineHunt.misc.MiscManager;
 
-import java.io.IOException;
 import java.util.logging.Level;
 
 public class Main extends JavaPlugin {
@@ -24,11 +18,9 @@ public class Main extends JavaPlugin {
     public void onEnable() {
         getDataFolder().mkdir();
 
-        ConfigurationSerialization.registerClass(Team.class, "Team");
-        getCommand("cteam").setExecutor(new CTeam());
-        getCommand("cteam").setTabCompleter(new CTeamCompleter());
-        getCommand("cpoints").setExecutor(new CPoints());
-        getCommand("cpoints").setTabCompleter(new CPointsCompleter());
+        MiscManager.start();
+        CTeamManager.start();
+        BountyManager.start();
 
         getServer().getPluginManager().registerEvents(new PlayerJoinListener(), this);
         ScoreboardManager.updateAllBoards();
@@ -55,8 +47,8 @@ public class Main extends JavaPlugin {
         getInstance().getLogger().log(Level.INFO, msg);
     }
 
-    public static void logDiskError(IOException e) {
-        getInstance().getLogger().log(Level.SEVERE, "§c(Error)§f Error writing to disk: \n" + e.getStackTrace().toString());
+    public static void logError(Exception e){
+        getInstance().getLogger().log(Level.SEVERE, "§c(Error)§f Error: \n" + e.getStackTrace().toString());
     }
 
     public static void testLog(String msg) {

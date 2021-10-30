@@ -9,7 +9,6 @@ import org.bukkit.entity.Player;
 import plugin.MineHunt.CTeam.managers.Colour;
 import plugin.MineHunt.CTeam.managers.TeamManager;
 import plugin.MineHunt.CTeam.types.Team;
-import plugin.MineHunt.Main;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,8 +38,7 @@ public class CTeam implements CommandExecutor {
             default -> "§c(Error)§f Unrecognised argument " + args[0];
         };
 
-        if(!(sender instanceof Player)) Main.logInfo(msg);
-        else sender.sendMessage(msg);
+        sender.sendMessage(msg);
         return true;
     }
 

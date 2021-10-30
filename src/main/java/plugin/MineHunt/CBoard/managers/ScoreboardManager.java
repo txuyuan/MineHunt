@@ -6,20 +6,20 @@ import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Scoreboard;
 import plugin.MineHunt.CTeam.types.Team;
+import plugin.MineHunt.playtime.PlayTimeManager;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class ScoreboardManager {
 
     static String divider = "§7----------------------§f";
 
-    public static Boolean updateAllBoards(){
-        boolean success = true;
+    public static void updateAllBoards(){
         if(Bukkit.getOnlinePlayers().size() > 0)
             for(Player player: Bukkit.getOnlinePlayers())
-                if(!updateBoard(player)) success = false;
-        return success;
+                updateBoard(player);
     }
 
     /** Options: 1-Summary, 2-Bounties*/
@@ -60,10 +60,14 @@ public class ScoreboardManager {
 
     private static List<Score> getScores(Player player, Team team, Objective obj){
         List<String> scores = new ArrayList<>();
+        String elapsedPlayTime = PlayTimeManager.convertSecondsToString(PlayTimeManager.getPlayTime(player));
+        String leftPlayTime = PlayTimeManager.convertSecondsToString(PlayTimeManager.getRemainingPlayTime(player));
 
         scores.add(divider);
-        scores.add("§bPlaytime elapsed§f: 100"); //TODO: FILL
-        scores.add("§bPlaytime left§f: 50");
+        if(!player.hasPermission("minehunt.playtime")){
+            scores.add("§bPlaytime elapsed§f: " + elapsedPlayTime);
+            scores.add("§bPlaytime left§f: " + leftPlayTime);
+        }else scores.add("§bPlaytime§f: §cBypass/r");
 
         if(team!=null)
             scores.add("§bPoints§f (" + team.getAliasColoured() + ") : " + team.getPoints());

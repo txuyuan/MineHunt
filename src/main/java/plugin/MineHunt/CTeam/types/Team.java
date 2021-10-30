@@ -1,10 +1,11 @@
 package plugin.MineHunt.CTeam.types;
 
+import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
-import org.bukkit.scoreboard.Score;
 import plugin.MineHunt.CBoard.managers.ScoreboardManager;
 import plugin.MineHunt.CTeam.managers.MCTeamManager;
 import plugin.MineHunt.Main;
@@ -20,6 +21,8 @@ import java.util.Map;
 public class Team implements ConfigurationSerializable {
 
     static final String fileName = "teamData.yml";
+    static File file = new File(Main.getInstance().getDataFolder(), fileName);
+    static FileConfiguration fileC = YamlConfiguration.loadConfiguration(file);
 
     private String alias;
     private final ArrayList<String> members;
@@ -69,24 +72,17 @@ public class Team implements ConfigurationSerializable {
 
     //Data tools
     private Boolean saveDeleteTeam(boolean isSave){
-        FileConfiguration fileC = getTeamFileConfig();
-
-        if(isSave) fileC.set("teams." + alias, this);
-        else fileC.set("teams." + alias, null);
-        return saveTeamFile(fileC);
+        fileC.set("teams." + alias, (isSave ? this : null));
+        return save(fileC);
     }
     public Boolean saveTeam(){ return saveDeleteTeam(true);}
     public Boolean deleteTeam(){return saveDeleteTeam(false);}
 
     public static Team getTeam(String alias){
-        FileConfiguration fileC = getTeamFileConfig();
-        Team team = (Team) fileC.getObject("teams." + alias, (Class) Team.class);
-        return team;
+        return (Team) fileC.getObject("teams." + alias, (Class) Team.class);
     }
     public static List<Team> getTeams(){
-
         List<Team> teams= new ArrayList<>();
-        FileConfiguration fileC = getTeamFileConfig();
         ConfigurationSection configSection = fileC.getConfigurationSection("teams");
         if(configSection==null) return teams;
 
@@ -97,25 +93,35 @@ public class Team implements ConfigurationSerializable {
         return teams;
     }
 
+    /** Returns null if no team*/
+    public static Team getTeam(OfflinePlayer player){
+        Team team = null;
+        for(Team allTeam: getTeams())
+            if(allTeam.getMembers().contains(player.getUniqueId().toString())){
+                team = allTeam;
+                break;
+            }
+        return team;
+    }
+
 
 
 
     //Disk Utils
-    private static File getTeamFile() {
-        File file = new File("./plugins/MineHunt/" + fileName);
-        try{file.createNewFile();}
-        catch(IOException e){Main.logDiskError(e);}
-        return file;
+    public static void load (){
+        if(!file.exists()) {
+            try {file.createNewFile();}
+            catch(IOException e){Main.logError(e);}
+        }
+        try { fileC.load(file);}
+        catch (FileNotFoundException e) {Main.logError(e);}
+        catch (IOException e) {Main.logError(e);}
+        catch(InvalidConfigurationException e){Main.logError(e);}
     }
-    public static FileConfiguration getTeamFileConfig(){
-        FileConfiguration fileC = YamlConfiguration.loadConfiguration(getTeamFile());
-        if(fileC==null) new FileNotFoundException("MineHunt" + fileName + " returned invalid data");
-        return fileC;
-    }
-    public static Boolean saveTeamFile(FileConfiguration fileC){
+    public static Boolean save(FileConfiguration fileC){
         ScoreboardManager.updateAllBoards();
         MCTeamManager.updateTeams(getTeams());
-        try{fileC.save(getTeamFile()); return true;}
+        try{fileC.save(file); return true;}
         catch(IOException e){return false;}
     }
 
