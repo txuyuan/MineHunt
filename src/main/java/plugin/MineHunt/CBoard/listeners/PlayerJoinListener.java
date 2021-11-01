@@ -9,7 +9,7 @@ public class PlayerJoinListener implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) {
-        ScoreboardManager.updateBoard(e.getPlayer());
+        ScoreboardManager.updateAllBoards();
     }
 
 

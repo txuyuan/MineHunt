@@ -7,6 +7,7 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import plugin.MineHunt.CTeam.types.Team;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,7 +34,8 @@ public class BountyCompleter implements TabCompleter {
             return Arrays.asList("create", "info", "complete");
         return switch(args[0]){
             case "create" -> createOptions(args);
-            case "info", "complete" -> bountyInfoOptions(args);
+            case "info" -> bountyInfoOptions(args);
+            case "complete" -> completeOptions(args);
             default -> new ArrayList<>();
         };
     }
@@ -46,7 +48,7 @@ public class BountyCompleter implements TabCompleter {
 
         if (args[1].equalsIgnoreCase("item"))
             return switch (args.length) {
-                case 3 -> Arrays.stream(Material.values()).map(Material::name).collect(Collectors.toList());
+                case 3 -> Arrays.stream(Material.values()).map(Material::name).map(String::toLowerCase).collect(Collectors.toList());
                 case 4 -> Arrays.asList("<amount>");
                 case 5 -> Arrays.asList("<reward>");
                 default -> new ArrayList<>();
@@ -68,9 +70,24 @@ public class BountyCompleter implements TabCompleter {
             return Arrays.asList("item", "player");
 
         if(args[1].equalsIgnoreCase("item") && args.length == 3)
-            return Arrays.stream(Material.values()).map(Material::name).collect(Collectors.toList());
+            return Arrays.stream(Material.values()).map(Material::name).map(String::toLowerCase).collect(Collectors.toList());
         if(args[1].equalsIgnoreCase("player") && args.length == 3)
             return Arrays.asList("<player>");
+
+        return new ArrayList<>();
+    }
+
+
+    private List<String> completeOptions(String[] args){
+        if(args.length == 2)
+            return Arrays.asList("item", "player");
+
+        if(args[1].equalsIgnoreCase("item") && args.length == 3)
+            return Arrays.stream(Material.values()).map(Material::name).map(String::toLowerCase).collect(Collectors.toList());
+        if(args[1].equalsIgnoreCase("player") && args.length == 3)
+            return Arrays.asList("<player>");
+
+        if(args.length == 4) return Team.getTeams().stream().map(Team::getAlias).collect(Collectors.toList());
 
         return new ArrayList<>();
     }

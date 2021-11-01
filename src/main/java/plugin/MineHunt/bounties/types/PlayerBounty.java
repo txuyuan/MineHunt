@@ -3,9 +3,12 @@ package plugin.MineHunt.bounties.types;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
+import plugin.MineHunt.CBoard.managers.ScoreboardManager;
 import plugin.MineHunt.CTeam.types.Team;
+import plugin.MineHunt.bounties.BountyManager;
 
 import java.util.Map;
+import java.util.UUID;
 
 public class PlayerBounty extends Bounty implements ConfigurationSerializable {
 
@@ -17,17 +20,26 @@ public class PlayerBounty extends Bounty implements ConfigurationSerializable {
     }
 
     public Boolean complete(Team team){
-        if(completed) return false;
+        if(getCompleted()) return false;
 
-        if(team!=null) team.addPoints(reward);
-        completed = true;
+        if(team!=null) team.addPoints(getReward());
+        setCompleted(true);
+        save();
         return true;
     }
 
     public OfflinePlayer getPlayer(){
-        return Bukkit.getServer().getOfflinePlayer(playerId);
+        return Bukkit.getServer().getOfflinePlayer(UUID.fromString(playerId));
     }
 
+
+
+    @Override
+    public void save(){
+        ScoreboardManager.updateAllBoards();
+        BountyManager.playerConfig.set(getUniqueId().toString(), this);
+        BountyManager.save();
+    }
 
 
     //Serialization

@@ -5,7 +5,9 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import plugin.MineHunt.CBoard.managers.ScoreboardManager;
 import plugin.MineHunt.CTeam.types.Team;
+import plugin.MineHunt.bounties.BountyManager;
 import plugin.MineHunt.playtime.PlayTimeManager;
 
 public class MineHuntCommand implements CommandExecutor {
@@ -33,6 +35,8 @@ public class MineHuntCommand implements CommandExecutor {
     private String reload(String[] args){
         PlayTimeManager.load(true);
         Team.load();
+        BountyManager.load();
+        ScoreboardManager.updateAllBoards();
         return "§b(Status)§f Reloaded";
     }
 
