@@ -7,6 +7,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import plugin.MineHunt.CTeam.managers.TeamManager;
 import plugin.MineHunt.CTeam.types.Team;
 import plugin.MineHunt.Main;
 
@@ -29,6 +30,7 @@ public class CPoints implements CommandExecutor {
         String msg = switch(args[0]){
             case "add" -> addPoints(args, true);
             case "remove" -> addPoints(args, false);
+            case "bypass" -> changeBypass(args);
             default -> "§c(Error)§f Unrecognised argument";
         };
 
@@ -38,7 +40,21 @@ public class CPoints implements CommandExecutor {
     }
 
 
+    private static String changeBypass(String[] args){
+        if(args.length < 2) TeamManager.toggleBypass();
+        else switch(args[1]){
+            case "true": TeamManager.setBypass(true);
+            case "false": TeamManager.setBypass(false);
+            default: return "§c(Error)§f Unrecognised bypass state " + args[1];
+        }
+
+        return "§b(Status)§f Points bypass set to " + (TeamManager.bypass ? "true" : "false");
+    }
+
+
     private static String addPoints(String[] args, boolean isAdd){
+        if(TeamManager.bypass) return "§c(Error)§f Global point bypass is enabled";
+
         String operation = isAdd ? " addition " : " subtraction ";
         String operator = isAdd ? " added to" : "removed from ";
 

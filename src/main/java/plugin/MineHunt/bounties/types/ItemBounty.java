@@ -5,7 +5,7 @@ import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.inventory.ItemStack;
 import plugin.MineHunt.CBoard.managers.ScoreboardManager;
 import plugin.MineHunt.CTeam.types.Team;
-import plugin.MineHunt.bounties.BountyManager;
+import plugin.MineHunt.bounties.managers.BountyManager;
 
 import java.util.Map;
 

@@ -5,7 +5,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import plugin.MineHunt.Main;
-import plugin.MineHunt.bounties.BountyManager;
+import plugin.MineHunt.bounties.managers.BountyManager;
 
 public class PlayerDeathListener implements Listener {
 

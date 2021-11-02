@@ -10,7 +10,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import plugin.MineHunt.CTeam.types.Team;
 import plugin.MineHunt.Main;
-import plugin.MineHunt.bounties.BountyManager;
+import plugin.MineHunt.bounties.managers.BountyManager;
 import plugin.MineHunt.bounties.types.ItemBounty;
 import plugin.MineHunt.bounties.types.PlayerBounty;
 

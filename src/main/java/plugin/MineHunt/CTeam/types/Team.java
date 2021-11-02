@@ -8,6 +8,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import plugin.MineHunt.CBoard.managers.ScoreboardManager;
 import plugin.MineHunt.CTeam.managers.MCTeamManager;
+import plugin.MineHunt.CTeam.managers.TeamManager;
 import plugin.MineHunt.Main;
 
 import java.io.File;
@@ -46,7 +47,7 @@ public class Team implements ConfigurationSerializable {
     //Modifiers
     public void removeMember(String playerUuid) {members.remove(playerUuid); saveTeam();}
     public void addMember(String playerUuid) {members.add(playerUuid); saveTeam();}
-    public void addPoints(int pointDiff) {this.points = this.points + pointDiff; saveTeam();}
+    public void addPoints(int pointDiff) { if(!TeamManager.bypass) this.points = this.points + pointDiff; saveTeam();}
     public void removePoints(int pointDiff){ addPoints(-pointDiff); }
     public void setName(String name) {this.name = name; saveTeam();}
     public void setAlias(String alias) {this.alias = alias.toUpperCase(); saveTeam();}

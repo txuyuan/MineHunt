@@ -1,4 +1,4 @@
-package plugin.MineHunt.bounties;
+package plugin.MineHunt.bounties.managers;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -138,6 +138,10 @@ public class BountyManager {
         if (event.getEntity().getKiller() == null) return;
         Player player = event.getEntity();
         Player killer = event.getEntity().getKiller();
+
+        //Default player kill
+        if(Team.getTeam(player) != null && !Team.getTeam(player).getMembers().contains(killer.getUniqueId().toString()))
+            Team.getTeam(player).addPoints(50);
 
         if(getPlayerBounty(player) != null) return;
         PlayerBounty bounty = getPlayerBounty(player);

@@ -7,7 +7,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import plugin.MineHunt.CBoard.managers.ScoreboardManager;
 import plugin.MineHunt.CTeam.types.Team;
-import plugin.MineHunt.bounties.BountyManager;
+import plugin.MineHunt.bounties.managers.BountyManager;
 import plugin.MineHunt.playtime.PlayTimeManager;
 
 public class MineHuntCommand implements CommandExecutor {

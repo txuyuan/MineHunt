@@ -13,6 +13,13 @@ import java.util.stream.Collectors;
 
 public class TeamManager {
 
+    public static boolean bypass;
+
+    public static void setBypass(boolean bypass) { TeamManager.bypass = bypass; }
+    public static void toggleBypass(){ bypass = !bypass; }
+
+
+
     public static Team createTeam(String name, String alias, char colour, List<String> players){
 
         if(name.length()==0){

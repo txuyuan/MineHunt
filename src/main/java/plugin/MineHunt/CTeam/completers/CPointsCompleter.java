@@ -28,11 +28,18 @@ public class CPointsCompleter implements TabCompleter {
     }
 
     private static List<String> parse(String[] args){
-        return switch(args.length){
-            case 1 -> Arrays.asList("add", "remove");
-            case 2 -> TeamManager.getAliases();
-            default -> new ArrayList<>();
-        };
+        if(args.length == 1) return Arrays.asList("add", "remove", "bypass");
+
+        if(args[0].equalsIgnoreCase("add") || args[0].equalsIgnoreCase("remove")){
+            if(args.length == 2) return TeamManager.getAliases();
+            if(args.length == 3) return Arrays.asList("<points>");
+        }
+
+        if(args[0].equalsIgnoreCase("bypass")){
+            if(args.length == 2) return Arrays.asList("true", "false");
+        }
+
+        return new ArrayList<>();
     }
 
 

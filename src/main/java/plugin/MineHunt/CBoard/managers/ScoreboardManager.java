@@ -10,7 +10,7 @@ import org.bukkit.scoreboard.Scoreboard;
 import plugin.MineHunt.CBoard.types.ScoreboardData;
 import plugin.MineHunt.CTeam.types.Team;
 import plugin.MineHunt.Main;
-import plugin.MineHunt.bounties.BountyManager;
+import plugin.MineHunt.bounties.managers.BountyManager;
 import plugin.MineHunt.bounties.types.ItemBounty;
 import plugin.MineHunt.bounties.types.PlayerBounty;
 import plugin.MineHunt.playtime.PlayTimeManager;

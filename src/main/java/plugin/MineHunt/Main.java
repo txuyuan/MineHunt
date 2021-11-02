@@ -7,8 +7,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 import plugin.MineHunt.CBoard.listeners.PlayerJoinListener;
 import plugin.MineHunt.CBoard.managers.ScoreboardManager;
 import plugin.MineHunt.CTeam.CTeamManager;
-import plugin.MineHunt.bounties.BountyManager;
+import plugin.MineHunt.bounties.managers.BountyManager;
 import plugin.MineHunt.misc.MiscManager;
+import plugin.MineHunt.playtime.PlayTimeManager;
 
 import java.util.logging.Level;
 
@@ -21,6 +22,7 @@ public class Main extends JavaPlugin {
         MiscManager.start();
         CTeamManager.start();
         BountyManager.start();
+        PlayTimeManager.start();
 
         getServer().getPluginManager().registerEvents(new PlayerJoinListener(), this);
         ScoreboardManager.updateAllBoards();

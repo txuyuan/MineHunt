@@ -31,12 +31,13 @@ public class MCTeamManager {
         List<OfflinePlayer> players = new ArrayList<>();
         playerUuids.forEach(uuid -> {
             if(Bukkit.getOfflinePlayerIfCached(uuid) != null) {
-                players.add(Bukkit.getOfflinePlayerIfCached(uuid));
+                OfflinePlayer player = Bukkit.getOfflinePlayerIfCached(uuid);
+                players.add(player);
                 Main.logInfo("UUID: " + uuid + " is invalid to add to vanilla team");
             }
         });
 
-        players.forEach(player -> team.addEntry(player.getName()));
+        players.forEach(team::addPlayer);
         team.setCanSeeFriendlyInvisibles(true);
         team.setAllowFriendlyFire(false);
         return true;

@@ -1,7 +1,5 @@
 package plugin.MineHunt.CBoard.types;
 
-import plugin.MineHunt.Main;
-
 public class ScoreboardData {
 
     private static ScoreboardType mode = ScoreboardType.INFO;

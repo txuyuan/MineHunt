@@ -8,6 +8,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import plugin.MineHunt.CBoard.managers.ScoreboardManager;
 import plugin.MineHunt.Main;
+import plugin.MineHunt.bounties.managers.PlayerKill;
+import plugin.MineHunt.playtime.commands.PlayTimeCommand;
+import plugin.MineHunt.playtime.commands.PlayTimeCompleter;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -21,6 +24,14 @@ public class PlayTimeManager {
     public static FileConfiguration config = YamlConfiguration.loadConfiguration(file);
 
 
+    public static void start(){
+        schedulePlayerTime();
+        load(true);
+        Bukkit.getServer().getPluginCommand("playtime").setExecutor(new PlayTimeCommand());
+        Bukkit.getServer().getPluginCommand("playtime").setTabCompleter(new PlayTimeCompleter());
+    }
+
+
 
     // Scheduler
     public static void schedulePlayerTime(){
@@ -29,6 +40,7 @@ public class PlayTimeManager {
             public void run() {
                 for(Player player: Bukkit.getOnlinePlayers()){
                     if(playTimeCheck(player)) addPlayTime(player, 1);
+                    PlayerKill.checkPlayerSurvival(player);
                 }
                 ScoreboardManager.updateAllBoards();
             }
@@ -70,6 +82,13 @@ public class PlayTimeManager {
             config.save(file);
         } catch (IOException e) {Main.logError(e);}
     }
+
+
+    public static void resetPlayTime(){
+        config.getKeys(false).forEach(key -> config.set(key, 0));
+        save();
+    }
+
 
     public static void addPlayTime(Player player, int timeDiff) {
         if (config.getKeys(false).contains(player.getUniqueId().toString())) {
