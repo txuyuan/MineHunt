@@ -140,8 +140,8 @@ public class BountyManager {
         Player killer = event.getEntity().getKiller();
 
         //Default player kill
-        if(Team.getTeam(player) != null && !Team.getTeam(player).getMembers().contains(killer.getUniqueId().toString()))
-            Team.getTeam(player).addPoints(50);
+        if(Team.getTeam(killer) != null && !Team.getTeam(player).getMembers().contains(player.getUniqueId().toString()))
+            Team.getTeam(killer).addPoints(50);
 
         if(getPlayerBounty(player) != null) return;
         PlayerBounty bounty = getPlayerBounty(player);

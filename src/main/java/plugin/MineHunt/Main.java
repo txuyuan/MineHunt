@@ -8,6 +8,7 @@ import plugin.MineHunt.CBoard.listeners.PlayerJoinListener;
 import plugin.MineHunt.CBoard.managers.ScoreboardManager;
 import plugin.MineHunt.CTeam.CTeamManager;
 import plugin.MineHunt.bounties.managers.BountyManager;
+import plugin.MineHunt.kits.KitManager;
 import plugin.MineHunt.misc.MiscManager;
 import plugin.MineHunt.playtime.PlayTimeManager;
 
@@ -23,6 +24,7 @@ public class Main extends JavaPlugin {
         CTeamManager.start();
         BountyManager.start();
         PlayTimeManager.start();
+        KitManager.start();
 
         getServer().getPluginManager().registerEvents(new PlayerJoinListener(), this);
         ScoreboardManager.updateAllBoards();

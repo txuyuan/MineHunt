@@ -36,8 +36,6 @@ public class ScoreboardManager {
         }.runTaskTimer(Main.getInstance(), 20, 100);
     }
 
-
-
     public static void updateAllBoards(){updateAllBoards(ScoreboardData.getType());}
 
     public static void updateAllBoards(ScoreboardData.ScoreboardType type){
